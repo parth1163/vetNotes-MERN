@@ -1,8 +1,15 @@
 require('express');
 require('mongodb');
+const Pet = require('./models/pet');
+const User = require('./models/user');
 
 exports.setApp = function (app, client)
 {
+  //ping api
+  app.get("/api/ping", (req, res, next) => {
+    res.status(200).json({ message: "Hello World" });
+  });
+
   //login api
   app.post('/api/login', async (req, res) => 
   {
