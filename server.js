@@ -13,7 +13,7 @@ app.use(
     // Dynamic CORS configuration based on environment
     origin:
       process.env.NODE_ENV === "production"
-        ? process.env.CLIENT_URL || "http://p2t2.aravptulsi.com"
+        ? process.env.CLIENT_URL || "https://p2t2.aravptulsi.com"
         : "http://localhost:5173",
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
