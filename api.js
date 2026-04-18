@@ -13,20 +13,20 @@ exports.setApp = function (app, client)
   //login api
   app.post('/api/login', async (req, res) => 
   {
-    const { login, password } = req.body;
+    const { login, Password } = req.body;
     try
     {
-      const user = await User.findOne({ email: { $regex: new RegExp('^' + login + '$', 'i') }, password: password }).lean();
+      const user = await User.findOne({ Email: { $regex: new RegExp('^' + login + '$', 'i') }, Password: Password }).lean();
       if( !user )
       {
-        return res.status(200).json({ id: -1, firstName: '', lastName: '', error: 'Invalid email/password' });
+        return res.status(200).json({ id: -1, FirstName: '', LastName: '', error: 'Invalid Email/Password' });
       }
-      var ret = { id: user._id, firstName: user.firstName, lastName: user.lastName, error: '' };
+      var ret = { id: user._id, FirstName: user.FirstName, LastName: user.LastName, error: '' };
       res.status(200).json(ret);
     }
     catch(err)
     {
-      res.status(500).json({ id: -1, firstName: '', lastName: '', error: err.message });
+      res.status(500).json({ id: -1, FirstName: '', LastName: '', error: err.message });
     }
   });
   
