@@ -154,11 +154,83 @@ exports.setApp = function (app, client)
     }
   });
 
-  //reset password api
+  //send verif code to email 
+  app.post('/api/forgotpassword', async (req, res) =>
+  {
+    const { email } = req.body;
+    try
+    {
+      const user = await User.findOne({ email: { $regex: new RegExp('^' + email + '$', 'i') } });
+      if( !user )
+      {
+        return res.status(200).json({ error: 'No account found with that email' });
+      }
+      //generates 6 dig code 
+      const code = Math.floor(100000 + Math.random() * 900000).toString();
+      //saves code to user
+      user.VerificationCode = code;
+      user.VerificationAttempts = 0;
+      await user.save();
+      res.status(200).json({ code: code, error: '' });
+    }
+    catch(err)
+    {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  //verify code given 
+  app.post('/api/verifycode', async (req, res) =>
+  {
+    const { email, code } = req.body;
+    try
+    {
+      const user = await User.findOne({ email: { $regex: new RegExp('^' + email + '$', 'i') } });
+      if( !user )
+      {
+        return res.status(200).json({ verified: false, error: 'No account found with that email' });
+      }
+      if( user.VerificationAttempts >= 3 )
+      {
+        return res.status(200).json({ verified: false, error: 'Too many attempts' });
+      }
+      if( user.VerificationCode !== code )
+      {
+        user.VerificationAttempts += 1;
+        await user.save();
+        return res.status(200).json({ verified: false, error: 'Invalid verification code' });
+      }
+      //verifies code matches 
+      user.VerificationAttempts = 0;
+      user.VerificationCode = '';
+      await user.save();
+      res.status(200).json({ verified: true, error: '' });
+    }
+    catch(err)
+    {
+      res.status(500).json({ verified: false, error: err.message });
+    }
+  });
+
+  //reset password api 
   app.post('/api/resetpassword', async (req, res) =>
   {
-      //prompt for email then send verification code.
-      //collect and verify verification code
-      //Prompt for new password.
+    const { email, newPassword } = req.body;
+    try
+    {
+      const user = await User.findOne({ email: { $regex: new RegExp('^' + email + '$', 'i') } });
+      if( !user )
+      {
+        return res.status(200).json({ error: 'No account found with that email' });
+      }
+      user.password = newPassword;
+      await user.save();
+      res.status(200).json({ error: '' });
+    }
+    catch(err)
+    {
+      res.status(500).json({ error: err.message });
+    }
   });
+  
 }
