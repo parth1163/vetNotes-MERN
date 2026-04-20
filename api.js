@@ -126,12 +126,55 @@ exports.setApp = function (app, client)
       user.VerificationCode = code;
       await user.save();
 
+      // Custom HTML Template using the new code
+      const emailTemplate =`<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+        <html data-editor-version="2" class="sg-campaigns" xmlns="http://www.w3.org/1999/xhtml">
+            <head>
+              <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+              <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1">
+              <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+              <style type="text/css">
+                body, p, div { font-family: 'Muli', sans-serif; font-size: 14px; color: #000000; }
+                p { margin: 0; padding: 0; }
+                @media screen and (max-width:480px) {
+                  .column { display: block !important; width: 100% !important; padding: 0 !important; }
+                }
+              </style>
+              <link href="https://fonts.googleapis.com/css?family=Muli&display=swap" rel="stylesheet">
+            </head>
+            <body style="margin: 0; padding: 0; background-color: #FFFFFF;">
+              <center>
+                <table width="100%" border="0" cellpadding="0" cellspacing="0" bgcolor="#ffbe00" style="padding: 30px 20px;">
+                  <tr>
+                    <td align="center">
+                      <table width="100%" border="0" cellpadding="0" cellspacing="0" style="max-width: 600px; background-color: #ffffff; padding: 50px 30px; border-radius: 8px; text-align: center;">
+                        <tr>
+                          <td>
+                            <h1 style="font-size: 43px; margin: 0 0 20px 0;">Welcome to Pet Tracker 22!</h1>
+                            <p style="font-size: 16px; margin: 0 0 10px 0;">Please verify your email address to use the app and website.</p>
+                            <p style="color: #ffbe00; font-size: 18px; font-weight: bold; margin: 0 0 25px 0;">Your verification code is:</p>
+                            <div style="display: inline-block; background-color: #ffbe00; padding: 12px 40px; border-radius: 6px;">
+                              <span style="color: #000000; font-size: 24px; font-weight: bold; letter-spacing: 4px;">${code}</span>
+                            </div>
+                            <p style="color: #ffbe00; font-size: 18px; font-weight: bold; margin: 30px 0 0 0;">Thank you!</p>
+                          </td>
+                        </tr>
+                      </table>
+                    </td>
+                  </tr>
+                </table>
+              </center>
+            </body>
+        </html>`;
+
       const msg = {
-        to: email.trim(),
+        to: Email.trim(),
         from: process.env.EMAIL_USER,
-        subject: 'Password Reset Code',
-        html: `<p>Your code is: <strong>${code}</strong></p>`
+        subject: 'Verify your Pet Tracker Account',
+        text: `Your verification code is: ${code}`,
+        html: emailTemplate
       };
+      
       sgMail.send(msg).catch(err => console.error('SendGrid SDK Error:', err));
       res.status(200).json({ error: '' });
     } catch (err) { res.status(500).json({ error: err.message }); }
