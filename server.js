@@ -1,9 +1,9 @@
+require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
 const app = express();
 var api = require('./api.js');
-require('dotenv').config();
 const url = process.env.MONGODB_URI;
 
 app.use(express.json());

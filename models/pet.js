@@ -12,7 +12,9 @@ const PetSchema = new mongoose.Schema({
   nextWalk: { type: Date },
   lastFeeding: { type: Date },
   nextFeeding: { type: Date },
-  notes: { type: String }
+  notes: { type: String },
+  FeedingFrequency: { type: Number, default: 8 },
+  WalkingFrequency: { type: Number, default: 0 }
 });
 
 module.exports = mongoose.model('Pet', PetSchema, 'Pets');
